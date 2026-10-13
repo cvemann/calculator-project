@@ -1,6 +1,6 @@
 let runningTotal = 0;
-let buffer = "O";
-let previousOperator;
+let buffer = "0";
+let previousOperator = null;
 
 const screen = document.querySelector('.screen');
 
@@ -25,23 +25,30 @@ function handleSymbol(symbol) {
         case 'C':
             buffer = '0';
             runningTotal = 0;
+            previousOperator = null;
             break;
-        case '-':
+        case '=':
             if (previousOperator === null) {
                 return;
             }
             flushOperation(parseInt(buffer));
             previousOperator = null;
-            buffer = runningTotal;
+            buffer = String(runningTotal);
             runningTotal = 0;
             break;
+        case '←':
+            if (buffer.length === 1) {
+                buffer = '0';
+            } else {
+                buffer = buffer.slice(0, -1);
+            }
+            break;
         case '+':
-        case '-':
+        case '−':
         case '×':
         case '÷':
             handleMath(symbol);
             break;
-        console.log('+','-','×','÷')
     }
 }
 
@@ -66,11 +73,11 @@ function handleMath(symbol) {
 function flushOperation(intBuffer) {
     if (previousOperator === '+') {
         runningTotal += intBuffer;
-    } else if (previousOperator === '-') {
+    } else if (previousOperator === '−') {
         runningTotal -= intBuffer;
-    } else if (previousOperator === '&times') {
+    } else if (previousOperator === '×') {
         runningTotal *= intBuffer;
-    } else if (previousOperator === '&divide') {
+    } else if (previousOperator === '÷') {
         runningTotal /= intBuffer;
     }
 }
