@@ -1,70 +1,372 @@
-html {
-    box-sizing: border-box;
+/* colours: the same graphite and paper as my lab (lab.meetgodswill.com),
+   with its cyan accent. dark is the default, light comes from the toggle. */
+:root {
+    --bg: #131516;
+    --surface: #1b1f20;
+    --line: #2c3234;
+    --text: #eef0ef;
+    --muted: #b3b9ba;
+    --faint: #8a9294;
+    --accent: #00d4ff;
+    --accent-deep: #00aed1;
+    --on-accent: #06181d;
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .95 0 0 0 0 .95 0 0 0 1.1 -.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
+
+    --font-sans: "Inter", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-*, *:before, *:after {
-    box-sizing: inherit;
+
+:root[data-theme="light"] {
+    --bg: #fbfbfa;
+    --surface: #f1f2f0;
+    --line: #dfe2df;
+    --text: #151a1b;
+    --muted: #4a5153;
+    --faint: #656d70;
+    --accent: #007a94;
+    --accent-deep: #005f73;
+    --on-accent: #ffffff;
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .1 0 0 0 0 .1 0 0 0 1.1 -.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
-    padding: 0;
     min-height: 100vh;
+
+    /* style */
+    background: var(--bg) var(--grain) fixed;
+    color: var(--text);
+
+    /* typography */
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+button,
+input {
+    font: inherit;
+    color: inherit;
+}
+
+/* one focus ring for everything you can tab to */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+/* top bar: back to the lab on the left, theme switch on the right */
+.lab-bar {
+    /* layout */
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+
+    /* typography */
+    font-family: var(--font-mono);
+    font-size: 12px;
+}
+
+.lab-back {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.lab-back .logo {
+    width: 24px;
+    height: auto;
+    color: var(--text);
+}
+
+.lab-back:hover,
+.theme-toggle:hover {
+    color: var(--accent);
+}
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* half filled square, like the lab */
+.theme-swatch {
+    width: 12px;
+    height: 12px;
+    border: 1px solid currentColor;
+    background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
+
+.theme-label {
+    width: 5ch;
+    text-align: left;
+}
+
+/* the main button: a solid block of accent with a spaced-out label */
+.btn-primary {
+    /* layout */
+    display: inline-flex;
     justify-content: center;
     align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 12px 28px;
+
+    /* style */
+    position: relative;
+    overflow: hidden;
+    border: 2px solid var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.05s;
+
+    /* typography */
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.btn-primary:hover {
+    background: var(--accent-deep);
+    border-color: var(--accent-deep);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+}
+
+/* while it works, a slanted hatch drifts across the button */
+.btn-primary.is-working::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(-24deg, currentColor 0 1px, transparent 1px 6px);
+    opacity: 0.25;
+    animation: drift 0.6s linear infinite;
+}
+
+@keyframes drift {
+    to {
+        background-position: 14.75px 0;
+    }
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+/* if someone has asked for less motion, keep everything still */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+body {
+    display: flex;
+    flex-direction: column;
 }
 
 .wrapper {
+    /* layout */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     width: 100%;
-    max-width: 400px;
-    background-color: black;
-    color: white;
+    max-width: 360px;
+    margin: auto;
+    padding: 24px 20px 64px;
+}
+
+/* the display: the sum waiting on top, the number below */
+.display {
+    /* layout */
+    padding: 20px 18px 16px;
+
+    /* style */
+    border: 1px solid var(--line);
+    background: var(--surface);
+
+    /* typography */
+    text-align: right;
+    font-family: var(--font-mono);
+}
+
+.expression {
+    min-height: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    color: var(--faint);
+    font-size: 13px;
 }
 
 .screen {
-    text-align: right;
-    font-family: 'Courier New', Courier, monospace;
-    padding: 20px 5px;
-    font-size: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+    color: var(--text);
+    font-size: 44px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+.screen.long {
+    font-size: 28px;
+    line-height: 1.8;
+}
+
+/* the number rolls up into place; a result rolls from further down */
+.screen.roll {
+    animation: roll 0.12s var(--ease);
+}
+
+.screen.roll-far {
+    animation: roll-far 0.28s var(--ease);
+}
+
+@keyframes roll {
+    from {
+        opacity: 0.4;
+        transform: translateY(25%);
+    }
+}
+
+@keyframes roll-far {
+    from {
+        opacity: 0;
+        transform: translateY(60%);
+    }
+}
+
+.calc-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .calc-button-row {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    margin-bottom: 0.5%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
 }
 
+/* each key sits on a hard shadow and presses down into it */
 .calc-button {
-    background-color: #d8d9db;
-    color: black;
-    border: none;
-    font-size: 40px;
-    height: 100px;
-    flex-basis: 24.5%;
+    /* layout */
+    height: 72px;
+
+    /* style */
+    border: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: 3px 3px 0 var(--line);
+    color: var(--text);
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s, background 0.15s, border-color 0.15s;
+
+    /* typography */
+    font-family: var(--font-mono);
+    font-size: 22px;
 }
 
 .calc-button:hover {
-    background-color: #ebebeb;
+    border-color: var(--faint);
+    background: var(--surface);
 }
 
-.calc-button:active {
-    background-color: #bbbcbe;
+.calc-button:active,
+.calc-button.pressed {
+    box-shadow: 0 0 0 var(--line);
+    transform: translate(3px, 3px);
 }
 
 .double {
-    flex-basis: 49.7%;
+    grid-column: span 2;
 }
 
 .triple {
-    flex-basis: 74.8%;
+    grid-column: span 3;
 }
 
-.calc-button:last-child {
-    background-color: #df974c;
-    color: white;
+.light {
+    color: var(--muted);
+    font-size: 18px;
 }
 
-.calc-button:last-child:hover {
-    background-color: #dfb07e;
+.operator {
+    color: var(--accent);
+}
+
+/* = is the main action, so it gets the solid accent */
+.equals {
+    border: 2px solid var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+}
+
+.equals:hover {
+    border-color: var(--accent-deep);
+    background: var(--accent-deep);
+}
+
+.hint {
+    color: var(--faint);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.7;
+    text-align: center;
+}
+
+/* on phones and tablets there's no keyboard to mention */
+@media (hover: none) {
+    .hint {
+        display: none;
+    }
+}
+
+/* the calculator rises in once when the page opens */
+.display,
+.calc-buttons {
+    animation: rise 0.7s var(--ease) both;
+}
+
+.calc-buttons {
+    animation-delay: 0.08s;
+}
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
 }
