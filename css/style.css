@@ -1,70 +1,383 @@
-html {
-    box-sizing: border-box;
-}
-*, *:before, *:after {
-    box-sizing: inherit;
+/* shared with the lab (lab.meetgodswill.com): graphite and paper, one cyan
+   accent, grain, a -24deg hatch, hard press shadows, square corners.
+   dark by default; the theme choice is shared with the lab. */
+:root {
+  --bg: #131516;
+  --surface: #1b1f20;
+  --line: #2c3234;
+  --text: #eef0ef;
+  --muted: #b3b9ba;
+  --faint: #8a9294;
+  --accent: #00d4ff;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .95 0 0 0 0 .95 0 0 0 1.1 -.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
+  color-scheme: dark;
+
+  --hatch: repeating-linear-gradient(-24deg, var(--line) 0 1px, transparent 1px 5px);
+  --hatch-ink: repeating-linear-gradient(-24deg, var(--faint) 0 1px, transparent 1px 6px);
+
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+
+
+  /* the logo's two letters as mask images (loader and footer signature) */
+  --rule: 2px;
+  --hair: 1px;
+  --press: 4px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
+:root[data-theme="light"] {
+  --bg: #fbfbfa;
+  --surface: #f1f2f0;
+  --line: #dfe2df;
+  --text: #151a1b;
+  --muted: #4a5153;
+  --faint: #656d70;
+  --accent: #007a94;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .1 0 0 0 0 .1 0 0 0 1.1 -.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
 body {
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
+  min-height: 100vh;
+  background: var(--bg) var(--grain) fixed;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input { font: inherit; color: inherit; }
+
+:focus-visible { outline: none; }
+
+a:focus-visible, button:focus-visible, input:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+}
+
+/* the lab bar: the mark leads back to the lab; the toggle is the lab's */
+.lab-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px max(20px, env(safe-area-inset-left, 0px)) 20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.lab-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.lab-back .logo { width: 24px; height: auto; color: var(--text); }
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.theme-label { display: inline-block; width: 5ch; text-align: left; }
+.theme-label::before { content: "light"; }
+:root[data-theme="light"] .theme-label::before { content: "dark"; }
+
+.theme-swatch {
+  width: 12px;
+  height: 12px;
+  border: var(--hair) solid currentColor;
+  background: linear-gradient(90deg, currentColor 0 50%, transparent 50%), var(--hatch-ink);
+}
+
+@media (hover: hover) {
+  .lab-back:hover, .theme-toggle:hover { color: var(--accent); }
+}
+
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.3s; }
+
+/* the press: a plate on a hatch shadow. hover lifts it, a press pushes it
+   down onto the shadow */
+.press {
+  position: relative;
+  isolation: isolate;
+  border: var(--hair) solid var(--text);
+  background: none;
+  color: var(--text);
+  transition: transform 0.15s var(--ease);
+}
+
+/* the plate's own fill, above its shadow */
+.press::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg);
+}
+
+.press::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--hair) * -1);
+  z-index: -2;
+  background: var(--hatch-ink);
+  transform: translate(var(--press), var(--press));
+  transition: transform 0.15s var(--ease);
+}
+
+@media (hover: hover) {
+  .press:hover { transform: translate(-1px, -1px); }
+  .press:hover::before { transform: translate(calc(var(--press) + 1px), calc(var(--press) + 1px)); }
+}
+
+.press:active,
+.press.is-down { transform: translate(var(--press), var(--press)); }
+
+.press:active::before,
+.press.is-down::before { transform: none; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* the calculator: one plate on a hatch press. a mono display, then a
+   4-column grid of square keys that press down into their shadow. */
+body {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
 }
 
 .wrapper {
     width: 100%;
-    max-width: 400px;
-    background-color: black;
-    color: white;
+    max-width: 360px;
+    margin: auto;
+    padding: 24px max(20px, env(safe-area-inset-right, 0px)) 64px max(20px, env(safe-area-inset-left, 0px));
+    display: grid;
+    gap: 20px;
 }
 
 .screen {
+    display: grid;
+    gap: 6px;
+    padding: 20px 18px 16px;
+    border: var(--hair) solid var(--line);
+    background: var(--surface);
     text-align: right;
-    font-family: 'Courier New', Courier, monospace;
-    padding: 20px 5px;
-    font-size: 40px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
 }
 
-.calc-button-row {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    margin-bottom: 0.5%;
+.expression {
+    min-height: 1.5em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    color: var(--faint);
+}
+
+.value {
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 44px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+}
+
+.value.is-long {
+    font-size: 32px;
+}
+
+.value.is-longer {
+    font-size: 22px;
+}
+
+.value span {
+    display: inline-block;
+}
+
+/* the value rolls up into place; a result travels further */
+.value .is-entry {
+    animation: roll 0.12s var(--ease);
+}
+
+.value .is-result {
+    animation: roll-far 0.28s var(--ease);
+}
+
+@keyframes roll {
+    from { opacity: 0.4; transform: translateY(30%); }
+}
+
+@keyframes roll-far {
+    from { opacity: 0; transform: translateY(70%); }
+}
+
+.calc-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
 }
 
 .calc-button {
-    background-color: #d8d9db;
-    color: black;
-    border: none;
-    font-size: 40px;
-    height: 100px;
-    flex-basis: 24.5%;
+    position: relative;
+    isolation: isolate;
+    aspect-ratio: 1;
+    border: var(--hair) solid var(--line);
+    background: none;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 22px;
+    cursor: pointer;
+    transition: transform 0.1s var(--ease), border-color 0.15s ease, color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
-.calc-button:hover {
-    background-color: #ebebeb;
+/* each key: its own fill above a hatch shadow */
+.calc-button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--bg);
+    transition: background-color 0.15s ease;
 }
 
-.calc-button:active {
-    background-color: #bbbcbe;
+.calc-button::before {
+    content: "";
+    position: absolute;
+    inset: calc(var(--hair) * -1);
+    z-index: -2;
+    background: var(--hatch);
+    transform: translate(3px, 3px);
+    transition: transform 0.1s var(--ease);
 }
 
 .double {
-    flex-basis: 49.7%;
+    grid-column: span 2;
+    aspect-ratio: auto;
 }
 
 .triple {
-    flex-basis: 74.8%;
+    grid-column: span 3;
+    aspect-ratio: auto;
 }
 
-.calc-button:last-child {
-    background-color: #df974c;
-    color: white;
+.key-clear,
+.key-back {
+    color: var(--muted);
+    font-size: 18px;
 }
 
-.calc-button:last-child:hover {
-    background-color: #dfb07e;
+.key-op {
+    color: var(--accent);
+}
+
+.key-op[aria-pressed="true"] {
+    border-color: var(--accent);
+}
+
+.key-equals {
+    border-color: var(--text);
+    color: var(--bg);
+}
+
+.key-equals::after {
+    background: var(--text);
+}
+
+.key-equals::before {
+    background: var(--hatch-ink);
+}
+
+@media (hover: hover) {
+    .calc-button:hover {
+        border-color: var(--faint);
+    }
+
+    .calc-button:hover::after {
+        background: var(--surface);
+    }
+
+    .key-equals:hover::after {
+        background: var(--accent);
+    }
+
+    .key-equals:hover {
+        border-color: var(--accent);
+    }
+}
+
+.calc-button:active,
+.calc-button.is-down {
+    transform: translate(3px, 3px);
+}
+
+.calc-button:active::before,
+.calc-button.is-down::before {
+    transform: none;
+}
+
+.keys-hint {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.7;
+    color: var(--faint);
+    text-align: center;
+}
+
+@media (hover: none) {
+    .keys-hint {
+        display: none;
+    }
+}
+
+/* arrival: the plate rises once */
+@media (prefers-reduced-motion: no-preference) {
+    .screen,
+    .calc-buttons,
+    .keys-hint {
+        animation: rise 0.7s var(--ease) both;
+    }
+
+    .calc-buttons { animation-delay: 0.08s; }
+    .keys-hint { animation-delay: 0.16s; }
+}
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
 }
