@@ -1,39 +1,44 @@
-// Theme toggle: dark by default; the choice is shared with the lab.
-(() => {
-  const button = document.querySelector(".theme-toggle");
-  if (!button) return;
-  const root = document.documentElement;
-  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  const label = () => button.setAttribute("aria-label", root.dataset.theme === "light" ? "Switch to dark mode" : "Switch to light mode");
-  function apply(theme) {
-    if (theme === "light") root.dataset.theme = "light";
-    else delete root.dataset.theme;
-    try { localStorage.setItem("theme", theme); } catch (e) {}
-    label();
-  }
-  button.addEventListener("click", () => {
-    const next = root.dataset.theme === "light" ? "dark" : "light";
-    if (document.startViewTransition && !reduceMotion.matches) document.startViewTransition(() => apply(next));
-    else apply(next);
-  });
-  label();
-})();
+// theme switch: dark is the default. the choice is saved, so the lab
+// and every project open in the same theme
+const themeButton = document.querySelector(".theme-toggle")
+const themeLabel = document.querySelector(".theme-label")
+
+function showTheme() {
+    if (document.documentElement.dataset.theme === "light") {
+        themeLabel.textContent = "dark"
+        themeButton.setAttribute("aria-label", "Switch to dark mode")
+    } else {
+        themeLabel.textContent = "light"
+        themeButton.setAttribute("aria-label", "Switch to light mode")
+    }
+}
+
+themeButton.addEventListener("click", function () {
+    if (document.documentElement.dataset.theme === "light") {
+        delete document.documentElement.dataset.theme
+        localStorage.setItem("theme", "dark")
+    } else {
+        document.documentElement.dataset.theme = "light"
+        localStorage.setItem("theme", "light")
+    }
+    showTheme()
+})
+
+showTheme()
 
 let runningTotal = 0;
 let buffer = "0";
 let previousOperator = null;
 
 const screen = document.querySelector('.screen');
-const valueEl = screen.querySelector('.value');
-const expressionEl = screen.querySelector('.expression');
-const keys = [...document.querySelectorAll('.calc-button')];
-const motion = document.documentElement.classList.contains('motion');
+const expression = document.querySelector('.expression');
 
 function buttonClick(value) {
-    // what the expression line shows once = is pressed: "12 × 3 ="
-    const finished = value === '=' && previousOperator !== null
-        ? `${runningTotal} ${previousOperator} ${buffer} =`
-        : null;
+    // before = is worked out, remember the sum for the line above, e.g. "12 × 3 ="
+    let sum = '';
+    if (value === '=' && previousOperator !== null) {
+        sum = runningTotal + ' ' + previousOperator + ' ' + buffer + ' =';
+    }
 
     if (isNaN(value)) {
         // this is not a number
@@ -42,7 +47,24 @@ function buttonClick(value) {
         // this is a number
         handleNumber(value);
     };
-    render(value === '=' ? 'result' : 'entry', finished);
+    screen.innerText = buffer;
+
+    // the line above the number shows what's waiting
+    if (sum !== '') {
+        expression.innerText = sum;
+    } else if (previousOperator !== null) {
+        expression.innerText = runningTotal + ' ' + previousOperator;
+    } else if (value !== '=') {
+        expression.innerText = '';
+    }
+
+    // smaller text for long numbers, so they still fit
+    screen.classList.toggle('long', buffer.length > 9);
+
+    // the new number rolls up into place (a result rolls further)
+    screen.classList.remove('roll', 'roll-far');
+    void screen.offsetWidth; // restarts the animation
+    screen.classList.add(value === '=' ? 'roll-far' : 'roll');
 }
 
 function handleSymbol(symbol) { 
@@ -121,68 +143,53 @@ function handleNumber(numberString) {
     
 }
 
-// The display: the value rolls up into place when it changes, a little
-// further for a result; the line above shows what is waiting.
-function render(kind, finished) {
-    if (valueEl.textContent !== buffer) {
-        const span = document.createElement('span');
-        span.textContent = buffer;
-        if (motion) span.className = kind === 'result' ? 'is-result' : 'is-entry';
-        valueEl.replaceChildren(span);
-    }
-    valueEl.classList.toggle('is-long', buffer.length > 9);
-    valueEl.classList.toggle('is-longer', buffer.length > 13);
+// show a key as pressed for a moment (used for keyboard presses)
+function flashButton(button) {
+    button.classList.add('pressed');
+    setTimeout(function() {
+        button.classList.remove('pressed');
+    }, 120);
+}
 
-    if (finished) expressionEl.textContent = finished;
-    else if (previousOperator !== null) expressionEl.textContent = `${runningTotal} ${previousOperator}`;
-    else if (kind !== 'result') expressionEl.innerHTML = '&nbsp;';
+// which button each key on the keyboard presses
+function findButton(key) {
+    if (key === '*' || key === 'x') key = '×';
+    if (key === '/') key = '÷';
+    if (key === '-') key = '−';
+    if (key === 'Enter') key = '=';
+    if (key === 'Backspace') key = '←';
+    if (key === 'Escape' || key === 'c') key = 'C';
 
-    keys.forEach((key) => {
-        if (key.classList.contains('key-op')) {
-            key.setAttribute('aria-pressed', String(key.innerText === previousOperator && buffer === '0'));
+    const buttons = document.querySelectorAll('.calc-button');
+    for (let i = 0; i < buttons.length; i++) {
+        if (buttons[i].innerText === key) {
+            return buttons[i];
         }
-    });
+    }
+    return null;
 }
-
-// a key press shows on the key, whether it came from a click or the keyboard
-function pressKey(key) {
-    key.classList.add('is-down');
-    clearTimeout(key.timer);
-    key.timer = setTimeout(() => key.classList.remove('is-down'), 120);
-}
-
-const keyMap = {
-    '/': '/', '*': '*', 'x': '*', 'X': '*', '-': '-', '+': '+',
-    'Enter': 'Enter', '=': 'Enter', 'Backspace': 'Backspace',
-    'Escape': 'Escape', 'Delete': 'Escape', 'c': 'Escape', 'C': 'Escape',
-};
-
-// whether the focused key was last reached by pointer (click, tap) or by Tab
-let pointerFocus = false;
 
 function init() {
-    document.addEventListener('pointerdown', () => { pointerFocus = true; });
-    document.addEventListener('keydown', (event) => { if (event.key === 'Tab') pointerFocus = false; });
-
     document.querySelector('.calc-buttons').addEventListener('click', function(event) {
-        const key = event.target.closest('.calc-button');
-        if (!key) return;
-        buttonClick(key.innerText);
+        if (!event.target.classList.contains('calc-button')) return;
+        buttonClick(event.target.innerText);
+        // after a mouse click, take focus off the button, so pressing
+        // Enter afterwards means = and not "press this button again"
+        if (event.detail > 0) {
+            event.target.blur();
+        }
     })
 
     document.addEventListener('keydown', function(event) {
-        if (event.metaKey || event.ctrlKey || event.altKey) return;
-        const name = /^[0-9]$/.test(event.key) ? event.key : keyMap[event.key];
-        if (!name) return;
-        const key = keys.find((k) => k.dataset.key === name);
-        if (!key) return;
-        // Enter on a key reached with Tab presses that key, as usual;
-        // after a click it means equals
-        const focused = document.activeElement;
-        if (event.key === 'Enter' && focused.classList.contains('calc-button') && !pointerFocus) return;
-        event.preventDefault();
-        pressKey(key);
-        buttonClick(key.innerText);
+        // Enter on a button you reached with Tab presses that button
+        if (event.key === 'Enter' && document.activeElement.classList.contains('calc-button')) return;
+
+        const button = findButton(event.key);
+        if (button) {
+            event.preventDefault();
+            flashButton(button);
+            buttonClick(button.innerText);
+        }
     })
 }
 

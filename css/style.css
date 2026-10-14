@@ -1,383 +1,372 @@
-/* shared with the lab (lab.meetgodswill.com): graphite and paper, one cyan
-   accent, grain, a -24deg hatch, hard press shadows, square corners.
-   dark by default; the theme choice is shared with the lab. */
+/* colours: the same graphite and paper as my lab (lab.meetgodswill.com),
+   with its cyan accent. dark is the default, light comes from the toggle. */
 :root {
-  --bg: #131516;
-  --surface: #1b1f20;
-  --line: #2c3234;
-  --text: #eef0ef;
-  --muted: #b3b9ba;
-  --faint: #8a9294;
-  --accent: #00d4ff;
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .95 0 0 0 0 .95 0 0 0 1.1 -.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
-  color-scheme: dark;
+    --bg: #131516;
+    --surface: #1b1f20;
+    --line: #2c3234;
+    --text: #eef0ef;
+    --muted: #b3b9ba;
+    --faint: #8a9294;
+    --accent: #00d4ff;
+    --accent-deep: #00aed1;
+    --on-accent: #06181d;
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .93 0 0 0 0 .95 0 0 0 0 .95 0 0 0 1.1 -.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.08'/%3E%3C/svg%3E");
 
-  --hatch: repeating-linear-gradient(-24deg, var(--line) 0 1px, transparent 1px 5px);
-  --hatch-ink: repeating-linear-gradient(-24deg, var(--faint) 0 1px, transparent 1px 6px);
-
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-
-
-
-  /* the logo's two letters as mask images (loader and footer signature) */
-  --rule: 2px;
-  --hair: 1px;
-  --press: 4px;
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --font-sans: "Inter", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+    --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 :root[data-theme="light"] {
-  --bg: #fbfbfa;
-  --surface: #f1f2f0;
-  --line: #dfe2df;
-  --text: #151a1b;
-  --muted: #4a5153;
-  --faint: #656d70;
-  --accent: #007a94;
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .1 0 0 0 0 .1 0 0 0 1.1 -.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
-  color-scheme: light;
+    --bg: #fbfbfa;
+    --surface: #f1f2f0;
+    --line: #dfe2df;
+    --text: #151a1b;
+    --muted: #4a5153;
+    --faint: #656d70;
+    --accent: #007a94;
+    --accent-deep: #005f73;
+    --on-accent: #ffffff;
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .08 0 0 0 0 .1 0 0 0 0 .1 0 0 0 1.1 -.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { -webkit-text-size-adjust: 100%; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 body {
-  min-height: 100vh;
-  background: var(--bg) var(--grain) fixed;
-  color: var(--text);
-  font-family: var(--font-sans);
-  font-size: 15px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+
+    /* style */
+    background: var(--bg) var(--grain) fixed;
+    color: var(--text);
+
+    /* typography */
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
 }
 
-button, input { font: inherit; color: inherit; }
-
-:focus-visible { outline: none; }
-
-a:focus-visible, button:focus-visible, input:focus-visible {
-  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+button,
+input {
+    font: inherit;
+    color: inherit;
 }
 
-/* the lab bar: the mark leads back to the lab; the toggle is the lab's */
+/* one focus ring for everything you can tab to */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+/* top bar: back to the lab on the left, theme switch on the right */
 .lab-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px max(20px, env(safe-area-inset-left, 0px)) 20px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--muted);
+    /* layout */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+
+    /* typography */
+    font-family: var(--font-mono);
+    font-size: 12px;
 }
 
 .lab-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--muted);
-  text-decoration: none;
-  transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--muted);
+    text-decoration: none;
 }
 
-.lab-back .logo { width: 24px; height: auto; color: var(--text); }
+.lab-back .logo {
+    width: 24px;
+    height: auto;
+    color: var(--text);
+}
+
+.lab-back:hover,
+.theme-toggle:hover {
+    color: var(--accent);
+}
 
 .theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-  border: 0;
-  background: none;
-  color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  cursor: pointer;
-  transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    cursor: pointer;
 }
 
-.theme-label { display: inline-block; width: 5ch; text-align: left; }
-.theme-label::before { content: "light"; }
-:root[data-theme="light"] .theme-label::before { content: "dark"; }
-
+/* half filled square, like the lab */
 .theme-swatch {
-  width: 12px;
-  height: 12px;
-  border: var(--hair) solid currentColor;
-  background: linear-gradient(90deg, currentColor 0 50%, transparent 50%), var(--hatch-ink);
+    width: 12px;
+    height: 12px;
+    border: 1px solid currentColor;
+    background: linear-gradient(90deg, currentColor 50%, transparent 50%);
 }
 
-@media (hover: hover) {
-  .lab-back:hover, .theme-toggle:hover { color: var(--accent); }
+.theme-label {
+    width: 5ch;
+    text-align: left;
 }
 
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.3s; }
+/* the main button: a solid block of accent with a spaced-out label */
+.btn-primary {
+    /* layout */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 12px 28px;
 
-/* the press: a plate on a hatch shadow. hover lifts it, a press pushes it
-   down onto the shadow */
-.press {
-  position: relative;
-  isolation: isolate;
-  border: var(--hair) solid var(--text);
-  background: none;
-  color: var(--text);
-  transition: transform 0.15s var(--ease);
+    /* style */
+    position: relative;
+    overflow: hidden;
+    border: 2px solid var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, transform 0.05s;
+
+    /* typography */
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 
-/* the plate's own fill, above its shadow */
-.press::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: var(--bg);
+.btn-primary:hover {
+    background: var(--accent-deep);
+    border-color: var(--accent-deep);
 }
 
-.press::before {
-  content: "";
-  position: absolute;
-  inset: calc(var(--hair) * -1);
-  z-index: -2;
-  background: var(--hatch-ink);
-  transform: translate(var(--press), var(--press));
-  transition: transform 0.15s var(--ease);
+.btn-primary:active {
+    transform: translateY(1px);
+    background: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
 }
 
-@media (hover: hover) {
-  .press:hover { transform: translate(-1px, -1px); }
-  .press:hover::before { transform: translate(calc(var(--press) + 1px), calc(var(--press) + 1px)); }
+/* while it works, a slanted hatch drifts across the button */
+.btn-primary.is-working::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(-24deg, currentColor 0 1px, transparent 1px 6px);
+    opacity: 0.25;
+    animation: drift 0.6s linear infinite;
 }
 
-.press:active,
-.press.is-down { transform: translate(var(--press), var(--press)); }
-
-.press:active::before,
-.press.is-down::before { transform: none; }
+@keyframes drift {
+    to {
+        background-position: 14.75px 0;
+    }
+}
 
 .visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }
 
+/* if someone has asked for less motion, keep everything still */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
 }
 
-/* the calculator: one plate on a hatch press. a mono display, then a
-   4-column grid of square keys that press down into their shadow. */
 body {
     display: flex;
     flex-direction: column;
 }
 
 .wrapper {
+    /* layout */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     width: 100%;
     max-width: 360px;
     margin: auto;
-    padding: 24px max(20px, env(safe-area-inset-right, 0px)) 64px max(20px, env(safe-area-inset-left, 0px));
-    display: grid;
-    gap: 20px;
+    padding: 24px 20px 64px;
 }
 
-.screen {
-    display: grid;
-    gap: 6px;
+/* the display: the sum waiting on top, the number below */
+.display {
+    /* layout */
     padding: 20px 18px 16px;
-    border: var(--hair) solid var(--line);
+
+    /* style */
+    border: 1px solid var(--line);
     background: var(--surface);
+
+    /* typography */
     text-align: right;
     font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
 }
 
 .expression {
-    min-height: 1.5em;
+    min-height: 20px;
     overflow: hidden;
     white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 13px;
     color: var(--faint);
+    font-size: 13px;
 }
 
-.value {
+.screen {
     overflow: hidden;
     white-space: nowrap;
+    color: var(--text);
     font-size: 44px;
     line-height: 1.15;
     letter-spacing: -0.02em;
-    color: var(--text);
 }
 
-.value.is-long {
-    font-size: 32px;
+.screen.long {
+    font-size: 28px;
+    line-height: 1.8;
 }
 
-.value.is-longer {
-    font-size: 22px;
-}
-
-.value span {
-    display: inline-block;
-}
-
-/* the value rolls up into place; a result travels further */
-.value .is-entry {
+/* the number rolls up into place; a result rolls from further down */
+.screen.roll {
     animation: roll 0.12s var(--ease);
 }
 
-.value .is-result {
+.screen.roll-far {
     animation: roll-far 0.28s var(--ease);
 }
 
 @keyframes roll {
-    from { opacity: 0.4; transform: translateY(30%); }
+    from {
+        opacity: 0.4;
+        transform: translateY(25%);
+    }
 }
 
 @keyframes roll-far {
-    from { opacity: 0; transform: translateY(70%); }
+    from {
+        opacity: 0;
+        transform: translateY(60%);
+    }
 }
 
 .calc-buttons {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 10px;
 }
 
+.calc-button-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+/* each key sits on a hard shadow and presses down into it */
 .calc-button {
-    position: relative;
-    isolation: isolate;
-    aspect-ratio: 1;
-    border: var(--hair) solid var(--line);
-    background: none;
+    /* layout */
+    height: 72px;
+
+    /* style */
+    border: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: 3px 3px 0 var(--line);
     color: var(--text);
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s, background 0.15s, border-color 0.15s;
+
+    /* typography */
     font-family: var(--font-mono);
     font-size: 22px;
-    cursor: pointer;
-    transition: transform 0.1s var(--ease), border-color 0.15s ease, color 0.15s ease;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
 }
 
-/* each key: its own fill above a hatch shadow */
-.calc-button::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--bg);
-    transition: background-color 0.15s ease;
+.calc-button:hover {
+    border-color: var(--faint);
+    background: var(--surface);
 }
 
-.calc-button::before {
-    content: "";
-    position: absolute;
-    inset: calc(var(--hair) * -1);
-    z-index: -2;
-    background: var(--hatch);
+.calc-button:active,
+.calc-button.pressed {
+    box-shadow: 0 0 0 var(--line);
     transform: translate(3px, 3px);
-    transition: transform 0.1s var(--ease);
 }
 
 .double {
     grid-column: span 2;
-    aspect-ratio: auto;
 }
 
 .triple {
     grid-column: span 3;
-    aspect-ratio: auto;
 }
 
-.key-clear,
-.key-back {
+.light {
     color: var(--muted);
     font-size: 18px;
 }
 
-.key-op {
+.operator {
     color: var(--accent);
 }
 
-.key-op[aria-pressed="true"] {
-    border-color: var(--accent);
+/* = is the main action, so it gets the solid accent */
+.equals {
+    border: 2px solid var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
 }
 
-.key-equals {
-    border-color: var(--text);
-    color: var(--bg);
+.equals:hover {
+    border-color: var(--accent-deep);
+    background: var(--accent-deep);
 }
 
-.key-equals::after {
-    background: var(--text);
-}
-
-.key-equals::before {
-    background: var(--hatch-ink);
-}
-
-@media (hover: hover) {
-    .calc-button:hover {
-        border-color: var(--faint);
-    }
-
-    .calc-button:hover::after {
-        background: var(--surface);
-    }
-
-    .key-equals:hover::after {
-        background: var(--accent);
-    }
-
-    .key-equals:hover {
-        border-color: var(--accent);
-    }
-}
-
-.calc-button:active,
-.calc-button.is-down {
-    transform: translate(3px, 3px);
-}
-
-.calc-button:active::before,
-.calc-button.is-down::before {
-    transform: none;
-}
-
-.keys-hint {
+.hint {
+    color: var(--faint);
     font-family: var(--font-mono);
     font-size: 11px;
     line-height: 1.7;
-    color: var(--faint);
     text-align: center;
 }
 
+/* on phones and tablets there's no keyboard to mention */
 @media (hover: none) {
-    .keys-hint {
+    .hint {
         display: none;
     }
 }
 
-/* arrival: the plate rises once */
-@media (prefers-reduced-motion: no-preference) {
-    .screen,
-    .calc-buttons,
-    .keys-hint {
-        animation: rise 0.7s var(--ease) both;
-    }
+/* the calculator rises in once when the page opens */
+.display,
+.calc-buttons {
+    animation: rise 0.7s var(--ease) both;
+}
 
-    .calc-buttons { animation-delay: 0.08s; }
-    .keys-hint { animation-delay: 0.16s; }
+.calc-buttons {
+    animation-delay: 0.08s;
 }
 
 @keyframes rise {
     from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(10px);
     }
 }
